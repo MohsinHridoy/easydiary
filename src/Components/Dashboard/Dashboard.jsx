@@ -40,13 +40,13 @@ const Dashboard = () => {
         photo: user.photoURL || placeholderImage,
       });
     } else {
-      Swal.fire({
-        icon: "warning",
-        title: "Unauthorized",
-        text: "Please log in to access the dashboard.",
-        showConfirmButton: true,
-      });
-      navigate("/"); // Redirect to login if no user
+      // Swal.fire({
+      //   icon: "warning",
+      //   title: "Unauthorized",
+      //   text: "Please log in to access the dashboard.",
+      //   showConfirmButton: true,
+      // });
+      // navigate("/"); // Redirect to login if no user
     }
 
     const fetchData = async () => {
@@ -64,7 +64,7 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [user,navigate]);
 
   // Log out handler
   const handleLogOut = () => {
