@@ -76,7 +76,7 @@ const Sidebar = () => {
             }
           >
             <FaPenToSquare className="text-xl" />
-            <span className="hidden md:inline">Compose</span>
+            <span className="hidden md:inline">ডায়রি লিখুন</span>
           </NavLink>
   
           {/* Non-functional Dashboard Link */}
@@ -84,7 +84,7 @@ const Sidebar = () => {
             className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
           >
             <FaTachometerAlt className="text-xl" />
-            <span className="hidden md:inline">Dashboard</span>
+            <span className="hidden md:inline">ড্যাশবোর্ড</span>
           </div>
   
           {/* Non-functional Notifications Link */}
@@ -92,7 +92,7 @@ const Sidebar = () => {
             className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
           >
             <IoIosNotifications className="text-xl" />
-            <span className="hidden md:inline">Notifications</span>
+            <span className="hidden md:inline">নোটিফিকেশন</span>
           </div>
   
           {/* Non-functional History Link */}
@@ -100,7 +100,7 @@ const Sidebar = () => {
             className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
           >
             <FaHistory className="text-xl" />
-            <span className="hidden md:inline">History</span>
+            <span className="hidden md:inline">ইতিহাস</span>
           </div>
   
           {/* Non-functional Sent Link */}
@@ -108,7 +108,7 @@ const Sidebar = () => {
             className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
           >
             <IoIosSend className="text-xl" />
-            <span className="hidden md:inline">Sent</span>
+            <span className="hidden md:inline">প্রেরিত</span>
           </div>
   
           {/* Non-functional Received Link */}
@@ -116,7 +116,7 @@ const Sidebar = () => {
             className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
           >
             <MdCallReceived className="text-xl" />
-            <span className="hidden md:inline">Received</span>
+            <span className="hidden md:inline">গৃহীত</span>
           </div>
   
           {/* Non-functional Pending Link */}
@@ -124,7 +124,7 @@ const Sidebar = () => {
             className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
           >
             <MdOutlinePendingActions className="text-xl" />
-            <span className="hidden md:inline">Pending</span>
+            <span className="hidden md:inline">অমীমাংসিত</span>
           </div>
   
           {/* Non-functional Completed Link */}
@@ -132,7 +132,7 @@ const Sidebar = () => {
             className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
           >
             <GrCompliance className="text-xl" />
-            <span className="hidden md:inline">Completed</span>
+            <span className="hidden md:inline">সম্পন্ন</span>
           </div>
   
           {/* Non-functional Call Support Link */}
@@ -140,7 +140,7 @@ const Sidebar = () => {
             className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
           >
             <RiCustomerService2Line className="text-xl" />
-            <span className="hidden md:inline">Call Support</span>
+            <span className="hidden md:inline">জরুরী প্রোয়জন</span>
           </div>
   
           {/* Non-functional Account Link */}
@@ -148,7 +148,7 @@ const Sidebar = () => {
             className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
           >
             <MdOutlineManageAccounts className="text-xl" />
-            <span className="hidden md:inline">Account</span>
+            <span className="hidden md:inline">অ্যাকাউন্ট</span>
           </div>
 
  {/* Log Out Link */}
@@ -157,7 +157,7 @@ const Sidebar = () => {
           className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-700 hover:bg-red-100 hover:text-red-500 cursor-pointer"
         >
           <IoMdLogOut className="text-xl" />
-          <span className="hidden md:inline">Log Out</span>
+          <span className="hidden md:inline">লগ আউট</span>
         </div>
 
 

@@ -25,6 +25,9 @@ const Dashboard = () => {
     photo: placeholderImage,
   });
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -48,23 +51,20 @@ const Dashboard = () => {
 
     const fetchData = async () => {
       try {
-        const { data, error } = await supabase.from('compose').select('*');
-        if (error) {
-          setError(error.message);
-          console.error('Error fetching data:', error);
-        } else {
-          setData(data);
-        }
+        const { data: fetchedData, error } = await supabase.from("compose").select("*");
+        if (error) throw new Error(error.message);
+
+        setData(fetchedData);
+        setFilteredData(fetchedData); // Initialize the filteredData to match data
       } catch (err) {
-        setError('Failed to fetch data');
-        console.error('Unexpected error:', err);
+        setError("Failed to fetch data");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [user, navigate]);
+  }, []);
 
   // Log out handler
   const handleLogOut = () => {
@@ -91,33 +91,53 @@ const Dashboard = () => {
 
 
 // Delete item handler
-const handleDelete = async (id) => {
-  try {
-    const { error } = await supabase.from('compose').delete().match({ id });
-    if (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Deletion Failed",
-        text: error.message,
-      });
+  // Handle search input change
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    if (query === "") {
+      setFilteredData(data); // Reset filter when search is empty
     } else {
-      // Remove item from local state
-      setData(data.filter(item => item.id !== id));
-      Swal.fire({
-        icon: "success",
-        title: "Deleted",
-        text: "Item has been successfully deleted.",
-      });
+      const filtered = data.filter((item) =>
+        Object.values(item).some((val) =>
+          String(val || "").toLowerCase().includes(query)
+        )
+      );
+      setFilteredData(filtered);
     }
-  } catch (err) {
-    console.error('Error deleting item:', err);
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "Something went wrong while deleting the item.",
-    });
-  }
-};
+  };
+
+  // Handle delete action
+  const handleDelete = async (id) => {
+    try {
+      const { error } = await supabase.from("compose").delete().match({ id });
+      if (error) throw new Error(error.message);
+
+      // Update both data and filteredData states to reflect changes
+      const updatedData = data.filter((item) => item.id !== id);
+      setData(updatedData);
+
+      // Re-apply the current search query to updated data
+      const updatedFilteredData = updatedData.filter((item) =>
+        Object.values(item).some((val) =>
+          String(val || "").toLowerCase().includes(searchQuery)
+        )
+      );
+      setFilteredData(updatedFilteredData);
+    } catch (err) {
+      console.error("Error deleting item:", err.message);
+    }
+  };
+if (loading) {
+  return <div>Loading...</div>;
+}
+
+if (error) {
+  return <div>Error: {error}</div>;
+}
+
+
 
 
   // PDF download handler with custom Bengali font
@@ -161,11 +181,11 @@ const handleDownloadPDF = () => {
   doc.save('compose_data.pdf');
 };
   // Search handler
-  const handleSearch = (event) => {
-    const query = event.target.value;
-    console.log("Searching for:", query);
-    // Implement search logic here if needed (e.g., filter `data` based on the search)
-  };
+  // const handleSearch = (event) => {
+  //   const query = event.target.value;
+  //   console.log("Searching for:", query);
+  //   // Implement search logic here if needed (e.g., filter `data` based on the search)
+  // };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -191,82 +211,64 @@ const handleDownloadPDF = () => {
 
         {/* Dashboard Overview (Cards) */}
         <div className="gap-4 mb-6 px-4">
-          <h2 className="text-2xl mb-4">Easy Diary Dashboard</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-4">
-            <Card icon={<IoIosSend />} title="Send" value="40" />
-            <Card icon={<MdCallReceived />} title="Received" value="120" />
-            <Card icon={<MdOutlinePendingActions />} title="Pending" value="30" />
-            <Card icon={<GrCompliance />} title="Completed" value="11" />
-          </div>
+
+
+  <h2 className="text-3xl font-extrabold mb-4 text-left text-gray-800 drop-shadow-sm">
+  Easy Diary Dashboard
+</h2>
+
+
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
+    {/* Card 1 */}
+    <div className="bg-gradient-to-r from-blue-400 to-blue-600 text-white shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 rounded-lg p-6">
+      <div className="flex items-center justify-between">
+        <div className="text-4xl">{<IoIosSend />}</div>
+        <div className="text-right">
+          <p className="text-lg font-semibold">প্রেরিত</p>
+          <p className="text-2xl font-bold">40</p>
         </div>
-
-        {/* Compose Data List (Full Data) */}
-        {/* <div className="px-4 overflow-x-auto">
-  <h2 className="text-xl mb-4">Compose Data</h2>
-  <button
-    onClick={handleDownloadPDF}
-    className="btn btn-primary mb-4"
-  >
-    Download PDF
-  </button>
-  <div className="overflow-x-auto shadow-md rounded-md bg-white">
-    <table className="table-auto w-full border-collapse">
-      <thead>
-        <tr>
-          <th className="px-4 py-2 border">ক্রমিক</th>
-          <th className="px-4 py-2 border">বিষয়/বিবরণ</th>
-          <th className="px-4 py-2 border">উপদেষ্টার দপ্তর</th>
-          <th className="px-4 py-2 border">সিনিয়র সচিবের দপ্তর</th>
-          <th className="px-4 py-2 border">অতিঃ সচিব (আইন)</th>
-          <th className="px-4 py-2 border">যুগ্ন সচিব (আইন)</th>
-          <th className="px-4 py-2 border">অতিঃ সচিব (শৃংখলা)</th>
-          <th className="px-4 py-2 border">যুগ্ন সচিব (শৃংখলা)</th>
-          <th className="px-4 py-2 border">আইন শাখাসমূহ</th>
-          <th className="px-4 py-2 border">শৃংখলা শাখাসমূহ</th>
-          <th className="px-4 py-2 border">সুপারিশ/মন্তব্য</th>
-          <th className="px-4 py-2 border">ডায়রি নং</th>
-          <th className="px-4 py-2 border">বিবিধ/অভ্যন্তরীণ দপ্তর</th>
-          <th className="px-4 py-2 border">বিবিধ/বহিস্থ দপ্তর</th>
-          <th className="px-4 py-2 border">সাক্ষর/সিল</th>
-          <th className="px-4 py-2 border">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item, index) => (
-          <tr key={item.id}>
-            <td className="px-4 py-2 border">{index + 1}</td>
-            <td className="px-4 py-2 border">{item.bishoy_biboron}</td>
-            <td className="px-4 py-2 border">{item.upodeshtar_depto}</td>
-            <td className="px-4 py-2 border">{item.senior_secretary_depto}</td>
-            <td className="px-4 py-2 border">{item.atik_secretary_law}</td>
-            <td className="px-4 py-2 border">{item.anu_vibhag}</td>
-            <td className="px-4 py-2 border">{item.jn_secretary_law}</td>
-            <td className="px-4 py-2 border">{item.law_shakha}</td>
-            <td className="px-4 py-2 border">{item.discipline_shakha}</td>
-            <td className="px-4 py-2 border">{item.suparish_comment}</td>
-            <td className="px-4 py-2 border">{item.diary_no}</td>
-            <td className="px-4 py-2 border">{item.internal_depto}</td>
-            <td className="px-4 py-2 border">{item.external_depto}</td>
-            <td className="px-4 py-2 border">{item.signature_seal}</td>
-            <td className="px-4 py-2 border">
-              <button
-                onClick={() => handleDelete(item.id)}
-                className="text-red-500 hover:text-red-700"
-                aria-label="Delete"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+      </div>
+    </div>
+    {/* Card 2 */}
+    <div className="bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 rounded-lg p-6">
+      <div className="flex items-center justify-between">
+        <div className="text-4xl">{<MdCallReceived />}</div>
+        <div className="text-right">
+          <p className="text-lg font-semibold">গৃহীত</p>
+          <p className="text-2xl font-bold">120</p>
+        </div>
+      </div>
+    </div>
+    {/* Card 3 */}
+    <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 rounded-lg p-6">
+      <div className="flex items-center justify-between">
+        <div className="text-4xl">{<MdOutlinePendingActions />}</div>
+        <div className="text-right">
+          <p className="text-lg font-semibold">অমীমাংসিত</p>
+          <p className="text-2xl font-bold">30</p>
+        </div>
+      </div>
+    </div>
+    {/* Card 4 */}
+    <div className="bg-gradient-to-r from-purple-400 to-purple-600 text-white shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 rounded-lg p-6">
+      <div className="flex items-center justify-between">
+        <div className="text-4xl">{<GrCompliance />}</div>
+        <div className="text-right">
+          <p className="text-lg font-semibold">সম্পন্ন</p>
+          <p className="text-2xl font-bold">11</p>
+        </div>
+      </div>
+    </div>
   </div>
-</div> */}
+</div>
 
 
+  
 <div className="px-4 h-full flex flex-col">
-  <h2 className="text-xl mb-4">Diary Records</h2>
+<h2 className="text-3xl font-extrabold mb-4 text-left text-gray-800 drop-shadow-sm">
+  Diary Records
+</h2>
+
   {/* searchbar */}
 <div className="flex  px-0 mb-4 border-l w-full">
   {/* Search Bar */}
@@ -276,6 +278,8 @@ const handleDownloadPDF = () => {
         type="text"
         placeholder="Search your letters..."
         onChange={handleSearch}
+        value={searchQuery}
+
         className="input input-bordered w-full"
       />
       <svg
@@ -304,7 +308,7 @@ const handleDownloadPDF = () => {
 
 
   {/* Table Wrapper */}
-  <div className="flex-grow  max-h-[60vh] overflow-y-auto shadow-md rounded-md bg-white">
+  <div className="flex-grow  min-h-[60vh] overflow-y-auto shadow-md rounded-md bg-white">
     <table className="table-auto w-full border-collapse">
       <thead>
         <tr>
@@ -327,7 +331,7 @@ const handleDownloadPDF = () => {
         </tr>
       </thead>
       <tbody>
-        {data.map((item, index) => (
+        {/* {data.map((item, index) => (
           <tr key={item.id}>
           <td className="px-4 py-2 border">{index + 1}</td>
   <td className="px-4 py-2 border text-center">{item.bishoy_biboron || "-"}</td>
@@ -356,7 +360,36 @@ const handleDownloadPDF = () => {
               </button>
             </td>
           </tr>
-        ))}
+        ))} */}
+
+
+{filteredData.map((item, index) => (
+              <tr key={item.id}>
+                <td className="px-4 py-2 border">{index + 1}</td>
+                <td className="px-4 py-2 border">{item.bishoy_biboron || "-"}</td>
+                <td className="px-4 py-2 border">{item.upodeshtar_depto || "-"}</td>
+                <td className="px-4 py-2 border">{item.senior_secretary_depto || "-"}</td>
+                <td className="px-4 py-2 border">{item.atik_secretary_law || "-"}</td>
+                <td className="px-4 py-2 border">{item.anu_vibhag || "-"}</td>
+                <td className="px-4 py-2 border">{item.atik_secretary_discipline || "-"}</td>
+                <td className="px-4 py-2 border">{item.anu_vibhag_discipline || "-"}</td>
+                <td className="px-4 py-2 border">{item.law_shakha || "-"}</td>
+                <td className="px-4 py-2 border">{item.discipline_shakha || "-"}</td>
+                <td className="px-4 py-2 border">{item.suparish_comment || "-"}</td>
+                <td className="px-4 py-2 border">{item.diary_no || "-"}</td>
+                <td className="px-4 py-2 border">{item.internal_depto || "-"}</td>
+                <td className="px-4 py-2 border">{item.external_depto || "-"}</td>
+                <td className="px-4 py-2 border">{item.signature_seal || "-"}</td>
+                <td className="px-4 py-2 border">
+                  <button
+                    onClick={() => handleDelete(item.id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
       </tbody>
     </table>
   </div>
