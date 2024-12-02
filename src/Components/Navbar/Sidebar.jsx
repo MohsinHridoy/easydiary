@@ -1,4 +1,6 @@
 import React from 'react'
+import { useContext, useEffect, useState } from "react";
+
 import logo from "../../assets/images/logo/easy-diary.png"
 import { NavLink } from 'react-router-dom'
 import { FaTachometerAlt } from 'react-icons/fa'
@@ -12,63 +14,157 @@ import { IoMdLogOut } from "react-icons/io";
 import { MdOutlineManageAccounts } from "react-icons/md";
 import { RiCustomerService2Line } from "react-icons/ri";
 import { FaPenToSquare } from "react-icons/fa6";
+import Swal from 'sweetalert2';
+import { AuthContext } from "../../providers/AuthProvider";
+import { useNavigate } from "react-router-dom";
+import Card from "../Card/Card"; // Assuming Card component is used for individual metrics
+import { supabase } from "../../firebase/supabaseClient"; // Import Supabase client
+import { jsPDF } from "jspdf"; // Import jsPDF
 
 const Sidebar = () => {
-  return (
-    <div className=
-    'text-gray-900 px-4 fixed w-16 md:w-64 border-r border-gray-300 h-screen bg-gray-200'>
-      <div>
-      <img src={logo} alt="easy Dairy logo" className='h-32 py-4 m-auto ' />
-      </div>
-    <ul className='flex flex-col mt-3 text-xl'>
-        <NavLink className="flex items-center py-1.5 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white">
-        <FaPenToSquare />
-            <span className='hidden md:inline '>Compose</span>
-        </NavLink>
-        <NavLink className="flex items-center py-1.5 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white">
-            <FaTachometerAlt></FaTachometerAlt>
-            <span className='hidden md:inline '>Dashboard</span>
-        </NavLink>
-        <NavLink className="flex items-center py-1.5 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white">
-            <IoIosNotifications ></IoIosNotifications>
-            <span className='hidden md:inline '>Notification</span>
-        </NavLink>
-        <NavLink className="flex items-center py-1.5 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white">
-            <FaHistory></FaHistory>
-            <span className='hidden md:inline '>History</span>
-        </NavLink>
-        <NavLink className="flex items-center py-1.5 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white">
-        <IoIosSend />
-            <span className='hidden md:inline '>Sent</span>
-        </NavLink>
-        <NavLink className="flex items-center py-1.5 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white">
-        <MdCallReceived />
-            <span className='hidden md:inline '>Received</span>
-        </NavLink>
-        <NavLink className="flex items-center py-1.5 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white">
-        <MdOutlinePendingActions />
-            <span className='hidden md:inline '>Pending</span>
-        </NavLink>
-        <NavLink className="flex items-center py-1.5 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white">
-        <GrCompliance />
-            <span className='hidden md:inline '>Completed</span>
-        </NavLink>
-        <NavLink className="flex items-center py-1.5 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white">
-        <RiCustomerService2Line />
-            <span className='hidden md:inline '>Call Support</span>
-        </NavLink>
-        <NavLink className="flex items-center py-1.5 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white">
-        <MdOutlineManageAccounts />
-            <span className='hidden md:inline '>Account</span>
-        </NavLink>
-        {/* <NavLink className="flex items-center  py-1.5 space-x-4 hover:rounded hover:cursor-pointer hover:bg-blue-600 hover:text-white">
-        <IoMdLogOut />
-            <span className='hidden md:inline '>Logout</span>
-        </NavLink> */}
-    </ul>
-  
-    </div>
-  )
-}
+    const { user, logOut } = useContext(AuthContext);
 
-export default Sidebar
+     // Log out handler
+  const handleLogOut = () => {
+    // Assume logOut is a function that handles the logout logic, like clearing tokens or user data
+    // You should replace it with your actual logout logic
+    logOut()
+      .then(() => {
+        Swal.fire({
+          icon: "success",
+          title: "Logged Out",
+          text: "You have successfully logged out.",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        navigate("/"); // Redirect after successful logout
+      })
+      .catch((error) => {
+        console.error("Logout Error:", error.message);
+        Swal.fire({
+          icon: "error",
+          title: "Logout Failed",
+          text: error.message,
+        });
+      });
+  };
+
+
+    return (
+      <div className="text-gray-900 px-4 fixed w-16 md:w-64 border-r border-gray-300 h-screen bg-gray-50 shadow-lg">
+        {/* Logo Section */}
+        <div>
+          <img
+            src={logo}
+            alt="Easy Diary Logo"
+            className="h-32 py-4 m-auto"
+          />
+        </div>
+  
+        {/* Navigation Links */}
+        <ul className="flex flex-col mt-3 text-base">
+          {/* Functional Compose Link */}
+          <NavLink
+            to="/compose"
+            className={({ isActive }) =>
+              `flex items-center py-3 px-6 space-x-4 font-medium rounded-lg 
+              transition-all duration-300 ${
+                isActive
+                  ? "bg-blue-500 text-white shadow-lg"
+                  : "text-gray-700 hover:bg-blue-100 hover:text-blue-500"
+              }`
+            }
+          >
+            <FaPenToSquare className="text-xl" />
+            <span className="hidden md:inline">Compose</span>
+          </NavLink>
+  
+          {/* Non-functional Dashboard Link */}
+          <div
+            className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
+          >
+            <FaTachometerAlt className="text-xl" />
+            <span className="hidden md:inline">Dashboard</span>
+          </div>
+  
+          {/* Non-functional Notifications Link */}
+          <div
+            className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
+          >
+            <IoIosNotifications className="text-xl" />
+            <span className="hidden md:inline">Notifications</span>
+          </div>
+  
+          {/* Non-functional History Link */}
+          <div
+            className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
+          >
+            <FaHistory className="text-xl" />
+            <span className="hidden md:inline">History</span>
+          </div>
+  
+          {/* Non-functional Sent Link */}
+          <div
+            className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
+          >
+            <IoIosSend className="text-xl" />
+            <span className="hidden md:inline">Sent</span>
+          </div>
+  
+          {/* Non-functional Received Link */}
+          <div
+            className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
+          >
+            <MdCallReceived className="text-xl" />
+            <span className="hidden md:inline">Received</span>
+          </div>
+  
+          {/* Non-functional Pending Link */}
+          <div
+            className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
+          >
+            <MdOutlinePendingActions className="text-xl" />
+            <span className="hidden md:inline">Pending</span>
+          </div>
+  
+          {/* Non-functional Completed Link */}
+          <div
+            className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
+          >
+            <GrCompliance className="text-xl" />
+            <span className="hidden md:inline">Completed</span>
+          </div>
+  
+          {/* Non-functional Call Support Link */}
+          <div
+            className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
+          >
+            <RiCustomerService2Line className="text-xl" />
+            <span className="hidden md:inline">Call Support</span>
+          </div>
+  
+          {/* Non-functional Account Link */}
+          <div
+            className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-400 cursor-not-allowed"
+          >
+            <MdOutlineManageAccounts className="text-xl" />
+            <span className="hidden md:inline">Account</span>
+          </div>
+
+ {/* Log Out Link */}
+ <div
+          onClick={handleLogOut}
+          className="flex items-center py-3 px-6 space-x-4 font-medium rounded-lg text-gray-700 hover:bg-red-100 hover:text-red-500 cursor-pointer"
+        >
+          <IoMdLogOut className="text-xl" />
+          <span className="hidden md:inline">Log Out</span>
+        </div>
+
+
+
+        </ul>
+      </div>
+    );
+  };
+  
+  export default Sidebar;

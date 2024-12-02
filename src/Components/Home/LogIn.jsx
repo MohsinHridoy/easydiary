@@ -69,7 +69,7 @@ const LogIn = () => {
   };
 
   return (
-    <div className="hero bg-base-200 min-h-screen">
+    <div className="hero bg-base-200 min-h-screen ">
       <div className="hero-content flex-col lg:flex-row justify-around gap-20">
         <div className="flex items-center">
           <img src={logo1} alt="Government Logo" className="h-40 w-auto lg:block hidden" />
@@ -85,7 +85,7 @@ const LogIn = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
-                className="w-full px-4 py-2 border-2 border-green-700 rounded-full focus:outline-none"
+                className="w-full px-4 py-2 border-2 border-green-700  focus:outline-none"
               />
               <div className="relative">
                 <input
@@ -94,7 +94,7 @@ const LogIn = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Password"
-                  className="w-full px-4 py-2 border-2 border-green-700 rounded-full focus:outline-none"
+                  className="w-full px-4 py-2 border-2 border-green-700  focus:outline-none"
                 />
                 <button
                   type="button"
@@ -104,19 +104,21 @@ const LogIn = () => {
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center  ">
                 <label>
                   <input
                     type="checkbox"
                     checked={keepLoggedIn}
+                    
                     onChange={() => setKeepLoggedIn(!keepLoggedIn)}
                   />
-                  Keep me logged in
+                     Keep me logged in
                 </label>
                 <NavLink to="/forgot-password" className="text-sm text-red-500 hover:underline">
                   Forgot Password?
                 </NavLink>
               </div>
+
               <div className="justify-between items-center flex">
                 <p>Don't have an account yet?</p>
                 <NavLink to="/registration" className="underline">

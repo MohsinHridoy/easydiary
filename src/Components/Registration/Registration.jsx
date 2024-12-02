@@ -85,7 +85,7 @@ const Registration = () => {
                   type="text"
                   {...register("name", { required: "Name is required" })}
                   placeholder="Username"
-                  className="w-full px-4 py-2 border-2 border-green-700 rounded-full focus:outline-none my-1"
+                  className="w-full px-4 py-2 border-2 border-green-700  focus:outline-none my-1"
                 />
                 {errors.name && <p className="text-red-600">{errors.name.message}</p>}
               </label>
@@ -103,7 +103,7 @@ const Registration = () => {
                     },
                   })}
                   placeholder="Email"
-                  className="w-full px-4 py-2 border-2 border-green-700 rounded-full focus:outline-none my-1"
+                  className="w-full px-4 py-2 border-2 border-green-700  focus:outline-none my-1"
                 />
                 {errors.email && <p className="text-red-600">{errors.email.message}</p>}
               </label>
@@ -121,7 +121,7 @@ const Registration = () => {
                     },
                   })}
                   placeholder="Password"
-                  className="w-full px-4 py-2 border-2 border-green-700 rounded-full focus:outline-none my-1"
+                  className="w-full px-4 py-2 border-2 border-green-700  focus:outline-none my-1"
                 />
                 {errors.password && <p className="text-red-600">{errors.password.message}</p>}
               </label>
@@ -132,7 +132,7 @@ const Registration = () => {
                 <input
                   type="date"
                   {...register("calender", { required: "Date of birth is required" })}
-                  className="w-full px-4 py-2 border-2 border-green-700 rounded-full focus:outline-none my-1"
+                  className="w-full px-4 py-2 border-2 border-green-700  focus:outline-none my-1"
                 />
                 {errors.calender && <p className="text-red-600">{errors.calender.message}</p>}
               </label>
